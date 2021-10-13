@@ -35,29 +35,50 @@ function App() {
 	useEffect(() => {
 		window.addEventListener("rn-web-bridge", (event) => {
 			// @ts-ignore
-			alert(JSON.stringify(event.detail));
+			alert("message from native application");
+			alert(JSON.stringify(event['detail']));
+
+			let proofInput = { a, b };
+			console.log(proofInput);
+
+			setProof(JSON.stringify("started"));
+
+			alert(makeProof === undefined)
+			makeProof(proofInput, wasmFile, zkeyFile).then(({ proof: _proof, publicSignals: _signals }) => {
+	
+				alert("make proof finished");
+			
+					setProof(JSON.stringify(_proof, null, 2));
+					setSignals(JSON.stringify(_signals, null, 2));
+				verifyProof(verificationKey, _signals, _proof).then((_isValid) => {
+					setIsValid(_isValid);
+				});
+			}).catch(err =>{
+				alert(err)
+			});
 		});
 	});
 	const runProofs = () => {
-		console.log(b.length);
-		if (a.length == 0 || b.length == 0) {
-			return;
-		}
-		let proofInput = { a, b };
-		console.log(proofInput);
 
-		makeProof(proofInput, wasmFile, zkeyFile).then(({ proof: _proof, publicSignals: _signals }) => {
+			let proofInput = { a, b };
+		if (window['ReactNativeWebView']){
+			alert('message is posted');
+
+			window['ReactNativeWebView'].postMessage(JSON.stringify({proofInput}))
+		}else{
+			setProof(JSON.stringify("started"));
+
+			makeProof(proofInput, wasmFile, zkeyFile).then(({ proof: _proof, publicSignals: _signals }) => {
 	
-			if (window['ReactNativeWebView']){
-				window['ReactNativeWebView'].postMessage(JSON.stringify({ _proof, _signals }))
-			}else{
-				setProof(JSON.stringify(_proof, null, 2));
-				setSignals(JSON.stringify(_signals, null, 2));
-			}
-			verifyProof(verificationKey, _signals, _proof).then((_isValid) => {
-				setIsValid(_isValid);
+				alert("make proof finished");
+
+					setProof(JSON.stringify(_proof, null, 2));
+					setSignals(JSON.stringify(_signals, null, 2));
+				verifyProof(verificationKey, _signals, _proof).then((_isValid) => {
+					setIsValid(_isValid);
+				});
 			});
-		});
+		}
 	};
 
 	const changeA = (e) => {
@@ -75,21 +96,11 @@ function App() {
 			<Alert  variant="primary">
 				This is a proof generator for circuit under the path <br />{wasmFile}
   </Alert>
-				{/* <Form>
-					<Form.Group className="mb-3" controlId="formBasicEmail">
-						<Form.Label>Input a:</Form.Label>
-						<Form.Control type="number" placeholder="e.g. 3" />
-
-					</Form.Group>
-
-					<Form.Group className="mb-3" controlId="formBasicPassword">
-						<Form.Label>Input b:</Form.Label>
-						<Form.Control type="number" placeholder="e.g. 11" />
-					</Form.Group>
-				</Form> */}
 
 				<Button variant="outline-primary" onClick={runProofs}>Generate Proof</Button>
 				<Container   style={{ fontSize: 12 }}>
+
+					
 					<Row>
 					<Col xs={3}></Col>
 					<Col xs={3}>Proof </Col>
