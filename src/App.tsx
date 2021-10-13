@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./App.css";
 
 import { Field, Input, Text, Button, Link } from "rimble-ui";
@@ -41,10 +41,16 @@ function App() {
 	const [signals, setSignals] = useState("");
 	const [isValid, setIsValid] = useState(false);
 
-	let wasmFile = "http://localhost:8000/circuit.wasm";
-	let zkeyFile = "http://localhost:8000/circuit_final.zkey";
-	let verificationKey = "http://localhost:8000/verification_key.json";
+	let wasmFile = "https://e306-95-158-35-18.ngrok.io/files/circuit.wasm";
+	let zkeyFile = "https://e306-95-158-35-18.ngrok.io/files/circuit_final.zkey";
+	let verificationKey = "https://e306-95-158-35-18.ngrok.io/files/verification_key.json";
 
+	useEffect(() => {
+		window.addEventListener("rn-web-bridge", (event)=> {
+			// @ts-ignore
+			alert(JSON.stringify(event.detail));
+		});
+	});
 	const runProofs = () => {
 		console.log(b.length);
 		if (a.length == 0 || b.length == 0) {
@@ -53,9 +59,11 @@ function App() {
 		let proofInput = { a, b };
 		console.log(proofInput);
 
+		window['ReactNativeWebView'].postMessage(JSON.stringify('JSON.stringify(window.location)'))
 		makeProof(proofInput, wasmFile, zkeyFile).then(({ proof: _proof, publicSignals: _signals }) => {
 			setProof(JSON.stringify(_proof, null, 2));
 			setSignals(JSON.stringify(_signals, null, 2));
+			window['ReactNativeWebView'].postMessage(JSON.stringify({_proof, _signals}))
 			verifyProof(verificationKey, _signals, _proof).then((_isValid) => {
 				setIsValid(_isValid);
 			});
