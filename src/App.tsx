@@ -26,11 +26,11 @@ function App() {
 
 	const [proof, setProof] = useState("");
 	const [signals, setSignals] = useState("");
-	const [isValid, setIsValid] = useState(false);
+	const [isValid, setIsValid] = useState(undefined);
 
-	let wasmFile = "https://a801-89-22-47-19.ngrok.io/files/circuit.wasm";
-	let zkeyFile = "https://a801-89-22-47-19.ngrok.io/files/circuit_final.zkey";
-	let verificationKey = "https://a801-89-22-47-19.ngrok.io/files/verification_key.json";
+	let wasmFile = "https://a7fc-195-39-242-119.ngrok.io/files/circuit.wasm";
+	let zkeyFile = "https://a7fc-195-39-242-119.ngrok.io/files/circuit_final.zkey";
+	let verificationKey = "https://a7fc-195-39-242-119.ngrok.io/files/verification_key.json";
 
 	useEffect(() => {
 		window.addEventListener("rn-web-bridge", (event) => {
@@ -38,12 +38,30 @@ function App() {
 			alert("message from native application");
 			alert(JSON.stringify(event['detail']));
 
-			let proofInput = { a, b };
+			let proofInput = 	{
+				"BBJAx": "1213652364257902510151929662417166377482228723440905593738842691803502149981",
+				"BBJAy": "14676214067024414667976818344434463403313919157482529511753944064776430669351",
+				"BBJClaimClaimsTreeRoot": "4097868691633605779443288721202760029772661722531849619505147199061679889928",
+				"BBJClaimMtp": [
+				  "0",
+				  "0",
+				  "0",
+				  "0"
+				],
+				"BBJClaimRevTreeRoot": "0",
+				"BBJClaimRootsTreeRoot": "0",
+				"challenge": "12345",
+				"challengeSignatureR8x": "17117490976969752075917313588219231495899176621058055728822427462930535155358",
+				"challengeSignatureR8y": "4481570372340485836597206504051057164694091431728642716350782168839437167003",
+				"challengeSignatureS": "1192399849894749028480562760239671791247178472281287874551148245771902000568",
+				"id":"371135506535866236563870411357090963344408827476607986362864968105378316288",
+				"state": "16751774198505232045539489584666775489135471631443877047826295522719290880931"
+			  }
+			  
 			console.log(proofInput);
 
 			setProof(JSON.stringify("started"));
 
-			alert(makeProof === undefined)
 			makeProof(proofInput, wasmFile, zkeyFile).then(({ proof: _proof, publicSignals: _signals }) => {
 	
 				alert("make proof finished");
@@ -60,7 +78,28 @@ function App() {
 	});
 	const runProofs = () => {
 
-			let proofInput = { a, b };
+			let proofInput = 
+			{
+				"BBJAx": "1213652364257902510151929662417166377482228723440905593738842691803502149981",
+				"BBJAy": "14676214067024414667976818344434463403313919157482529511753944064776430669351",
+				"BBJClaimClaimsTreeRoot": "4097868691633605779443288721202760029772661722531849619505147199061679889928",
+				"BBJClaimMtp": [
+				  "0",
+				  "0",
+				  "0",
+				  "0"
+				],
+				"BBJClaimRevTreeRoot": "0",
+				"BBJClaimRootsTreeRoot": "0",
+				"challenge": "12345",
+				"challengeSignatureR8x": "17117490976969752075917313588219231495899176621058055728822427462930535155358",
+				"challengeSignatureR8y": "4481570372340485836597206504051057164694091431728642716350782168839437167003",
+				"challengeSignatureS": "1192399849894749028480562760239671791247178472281287874551148245771902000568",
+				"id":"371135506535866236563870411357090963344408827476607986362864968105378316288",
+				"state": "16751774198505232045539489584666775489135471631443877047826295522719290880931"
+			  }
+			  
+			  
 		if (window['ReactNativeWebView']){
 			alert('message is posted');
 
@@ -116,7 +155,7 @@ function App() {
 					<Col xs={3}></Col>
 
 					<Col xs={3}>Result </Col>
-					<Col xs={6}>{proof.length > 0 && <p>{isValid ? "Valid proof" : "Invalid proof"}</p>} </Col>
+					<Col xs={6}>{proof.length > 0 && <p>{isValid ? "Valid proof" : ( isValid === undefined ? "calculating":  "Invalid proof")}</p>} </Col>
 					</Row>
 					</Container>
 				

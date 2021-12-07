@@ -15,7 +15,7 @@ node index.js
 yarn start
 ```
 
-The circuit and related files are located in the folder `src/zkproof`. 
+The circuit and related files are located in the folder `/public/files`. 
 
 
 
@@ -34,7 +34,7 @@ TEMP: only if IOS phone will be used  in ffjavascript module / edit threadman.js
  }
 ```
 Run react-snarkjs file server on port 8000 (folder file-server inside snarkjs)
-`node src/file-server/index.js`
+`cd src && node file-server/index.js`
 
 Use ngrok on http 8000. Replace file urls in App.tsx (only domain) (`ngrok http 8000`)
 ```
