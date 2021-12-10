@@ -39,9 +39,9 @@ Run react-snarkjs file server on port 8000 (folder file-server inside snarkjs)
 Use ngrok on http 8000. Replace file urls in App.tsx (only domain) (`ngrok http 8000`)
 ```
 e.g.
-	let wasmFile = "https://a801-89-22-47-19.ngrok.io/files/circuit.wasm";
-	let zkeyFile = "https://a801-89-22-47-19.ngrok.io/files/circuit_final.zkey";
-	let verificationKey = "https://a801-89-22-47-19.ngrok.io/files/verification_key.json"; 
+	let wasmFile = "https://7cd1-195-39-242-119.ngrok.io/files/circuit.wasm";
+	let zkeyFile = "https://7cd1-195-39-242-119.ngrok.io/files/circuit_final.zkey";
+	let verificationKey = "https://7cd1-195-39-242-119.ngrok.io/files/verification_key.json"; 
 ```
 Run react-snark js application on port 3000
 
