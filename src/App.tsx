@@ -7,6 +7,7 @@ import { Alert, Button, Col, Container, Form, Row } from 'react-bootstrap';
 const snarkjs = require("snarkjs");
 
 const makeProof = async (_proofInput: any, _wasm: string, _zkey: string) => {
+	console.log("make proof started");
 	const { proof, publicSignals } = await snarkjs.groth16.fullProve(_proofInput, _wasm, _zkey);
 	return { proof, publicSignals };
 };
@@ -32,50 +33,31 @@ function App() {
 	let zkeyFile = "/files/circuit_final.zkey";
 	let verificationKey = "/files/verification_key.json";
 
-	useEffect(() => {
-		window.addEventListener("rn-web-bridge", (event) => {
-			// @ts-ignore
-			alert("message from native application");
-			alert(JSON.stringify(event['detail']));
-
-			let proofInput = 	{
-				"BBJAx": "1213652364257902510151929662417166377482228723440905593738842691803502149981",
-				"BBJAy": "14676214067024414667976818344434463403313919157482529511753944064776430669351",
-				"BBJClaimClaimsTreeRoot": "4097868691633605779443288721202760029772661722531849619505147199061679889928",
-				"BBJClaimMtp": [
-				  "0",
-				  "0",
-				  "0",
-				  "0"
-				],
-				"BBJClaimRevTreeRoot": "0",
-				"BBJClaimRootsTreeRoot": "0",
-				"challenge": "12345",
-				"challengeSignatureR8x": "17117490976969752075917313588219231495899176621058055728822427462930535155358",
-				"challengeSignatureR8y": "4481570372340485836597206504051057164694091431728642716350782168839437167003",
-				"challengeSignatureS": "1192399849894749028480562760239671791247178472281287874551148245771902000568",
-				"id":"371135506535866236563870411357090963344408827476607986362864968105378316288",
-				"state": "16751774198505232045539489584666775489135471631443877047826295522719290880931"
-			  }
-			  
-			console.log(proofInput);
-
+	window.addEventListener("flutterInAppWebViewPlatformReady", function(event) {
+		window['flutter_inappwebview'].callHandler('handlerProofRequest')
+		  .then(function(result) {
+			// print to the console the data coming
+			// from the Flutter side.
+			console.log("webview recieved message from flutter:",JSON.stringify(result));
 			setProof(JSON.stringify("started"));
 
-			makeProof(proofInput, wasmFile, zkeyFile).then(({ proof: _proof, publicSignals: _signals }) => {
+			makeProof(result, wasmFile, zkeyFile).then(({ proof: _proof, publicSignals: _signals }) => {
 	
-				alert("make proof finished");
-			
-					setProof(JSON.stringify(_proof, null, 2));
-					setSignals(JSON.stringify(_signals, null, 2));
-				verifyProof(verificationKey, _signals, _proof).then((_isValid) => {
-					setIsValid(_isValid);
+			    console.log("make proof finished:");
+				console.log({proof:_proof, signals:_signals});
+				// 	setProof(JSON.stringify(_proof, null, 2));
+				// 	setSignals(JSON.stringify(_signals, null, 2));
+				// verifyProof(verificationKey, _signals, _proof).then((_isValid) => {
+				// 	setIsValid(_isValid);
+				window['flutter_inappwebview']
+			  .callHandler('handleProofResponse', _proof);
 				});
 			}).catch(err =>{
-				alert(err)
+				console.log("error")
+				console.log(err)
 			});
-		});
 	});
+
 	const runProofs = () => {
 
 			let proofInput = 
@@ -119,14 +101,6 @@ function App() {
 				});
 			});
 		}
-	};
-
-	const changeA = (e) => {
-		setA(e.target.value);
-	};
-
-	const changeB = (e) => {
-		setB(e.target.value);
 	};
 
 	return (
