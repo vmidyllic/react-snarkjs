@@ -50,7 +50,7 @@ function App() {
 				// verifyProof(verificationKey, _signals, _proof).then((_isValid) => {
 				// 	setIsValid(_isValid);
 				window['flutter_inappwebview']
-			  .callHandler('handleProofResponse', _proof);
+			  .callHandler('handlerProofResponse', _proof);
 				});
 			}).catch(err =>{
 				console.log("error")
