@@ -23,3 +23,5 @@ yarn-debug.log*
 yarn-error.log*
 
 /zkproof
+/build-v2
+/build-backup

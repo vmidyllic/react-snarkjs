@@ -12,13 +12,13 @@ const makeProof = async (_proofInput: any, _wasm: string, _zkey: string) => {
 	console.log("make proof started");
 	
 	const { proof, publicSignals } = await snarkjs.groth16.fullProve(_proofInput, _wasm, _zkey);
-	return { proof, publicSignals };
+	return { proof, pub_signals: publicSignals };
 };
 
 const makeProofOnly = async ( _zkey: string, _wasm: any) => {
 	console.log("make proof v2 started");
 	const { proof, publicSignals } = await snarkjs.groth16.prove(_zkey,_wasm);
-	return { proof, publicSignals };
+	return { proof, pub_signals: publicSignals  };
 };
 
 const verifyProof = async (_verificationkey: string, signals: any, proof: any) => {
@@ -42,38 +42,32 @@ function App() {
 	let zkeyFile = "/files/auth-v2/circuit_final.zkey";
 	let verificationKey = "/files/auth-v2/verification_key.json";
 
-	/*
 
 	// auth-v1 version
 
-	window.addEventListener("flutterInAppWebViewPlatformReady", function(event) {
-		window['flutter_inappwebview'].callHandler('handlerProofRequest')
-		  .then(function(result) {
-			// print to the console the data coming
-			// from the Flutter side.
-			console.log("webview recieved message from flutter:",JSON.stringify(result));
-			setProof(JSON.stringify("started"));
+	// window.addEventListener("flutterInAppWebViewPlatformReady", function(event) {
+	// 	console.log("flutterInAppWebViewPlatformReady is called!")
+	// 	console.log("setup handlerProofRequest for flutter_inappwebview object")
+	// 	window['flutter_inappwebview'].callHandler('handlerProofRequest')
+	// 	  .then(function(result) {
+	// 		// print to the console the data coming
+	// 		// from the Flutter side.
+	// 		console.log("webview recieved message from flutter:",JSON.stringify(result));
+	// 		setProof(JSON.stringify("started"));
+	// 		makeProof(result, wasmFile, zkeyFile).then(({ proof: _proof, publicSignals: _signals }) => {
+	// 		    console.log("make proof finished:");
+	// 			console.log({proof:_proof, signals:_signals});
+	// 			window['flutter_inappwebview']
+	// 		  .callHandler('handlerProofResponse', {proof:_proof, signals:_signals});
+	// 			});
+	// 		}).catch(err =>{
+	// 			console.log("error")
+	// 			console.log(err)
+	// 		});
+	// });
 
-			makeProof(result, wasmFile, zkeyFile).then(({ proof: _proof, publicSignals: _signals }) => {
+
 	
-			    console.log("make proof finished:");
-				console.log({proof:_proof, signals:_signals});
-				// 	setProof(JSON.stringify(_proof, null, 2));
-				// 	setSignals(JSON.stringify(_signals, null, 2));
-				// verifyProof(verificationKey, _signals, _proof).then((_isValid) => {
-				// 	setIsValid(_isValid);
-				window['flutter_inappwebview']
-			  .callHandler('handlerProofResponse', _proof);
-				});
-			}).catch(err =>{
-				console.log("error")
-				console.log(err)
-			});
-	});
-
-	*/
-
-
 	// auth v2 version
 	window.addEventListener("flutterInAppWebViewPlatformReady", function(event) {
 		window['flutter_inappwebview'].callHandler('handlerProofRequest')
@@ -88,9 +82,9 @@ function App() {
 					fdWasm.close();
 					wc.default(wasm).then(async witnessCalculator => {
 						witnessCalculator.calculateWTNSBin(inputs,0).then(buff =>{
-							makeProofOnly(zkeyFile,buff).then(({ proof: _proof, publicSignals: _signals }) =>{
+							makeProofOnly(zkeyFile,buff).then(({ proof: _proof, pub_signals: _signals }) =>{
 								window['flutter_inappwebview']
-								.callHandler('handlerProofResponse', { proof: _proof, publicSignals: _signals });
+								.callHandler('handlerProofResponse', { proof: _proof, pub_signals: _signals });
 						});
 					})
 				})
@@ -132,7 +126,7 @@ function App() {
 			setProof(JSON.stringify("started"));
 
 			console.log(wasmFile);
-			makeProof(proofInput, wasmFile, zkeyFile).then(({ proof: _proof, publicSignals: _signals }) => {
+			makeProof(proofInput, wasmFile, zkeyFile).then(({ proof: _proof, pub_signals: _signals }) => {
 	
 				alert("make proof finished");
 
@@ -146,24 +140,113 @@ function App() {
 	};
 	const runProofsV2 = () => {
 	let proofInput = {
-			"BBJAx": "21293424947375383982389393614012508686131238764507830962167322403690693519627",
-			"BBJAy": "16598508602523319544157021146196633816724804268958683601720561163654916282271",
-			"BBJClaimClaimsTreeRoot": "20554237286409735067431599927785586172790530292725728679114269239512014723026",
-			"BBJClaimMtp": [
-			  "0",
-			  "0",
-			  "0",
-			  "0"
-			],
-			"BBJClaimRevTreeRoot": "0",
-			"BBJClaimRootsTreeRoot": "0",
-			"challenge": "12345",
-			"challengeSignatureR8x": "16860174036902244256104674167072183274610068074238677290884913730756513190577",
-			"challengeSignatureR8y": "326442332208888422237100058622311240286780945155390934232808034772471332948",
-			"challengeSignatureS": "1544566991663309777969185762263569084242157516252959158357266521174928119074",
-			"id": "288080072193943372832556802534124228514018653169991403332943485887956910080",
-			"state":"15683801318497632203100523443287756879812316361757309549093021254194216616235"
-	}
+        "authClaim": [
+            "164867201768971999401702181843803888060",
+            "0",
+            "17640206035128972995519606214765283372613874593503528180869261482403155458945",
+            "20634138280259599560273310290025659992320584624461316485434108770067472477956",
+            "15930428023331155902",
+            "0",
+            "0",
+            "0"
+        ],
+        "authClaimMtp": [
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+        ],
+        "authClaimNonRevMtp": [
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+        ],
+        "authClaimNonRevMtpAuxHi": "0",
+        "authClaimNonRevMtpAuxHv": "0",
+        "authClaimNonRevMtpNoAux": "1",
+        "challenge": "1",
+        "challengeSignatureR8x": "8553678144208642175027223770335048072652078621216414881653012537434846327449",
+        "challengeSignatureR8y": "5507837342589329113352496188906367161790372084365285966741761856353367255709",
+        "challengeSignatureS": "2093461910575977345603199789919760192811763972089699387324401771367839603655",
+        "claimsTreeRoot": "209113798174833776229979813091844404331713644587766182643501254985715193770",
+        "id": "293373448908678327289599234275657468666604586273320428510206058753616052224",
+        "revTreeRoot": "0",
+        "rootsTreeRoot": "0",
+        "state": "15383795261052586569047113011994713909892315748410703061728793744343300034754"
+    }
 		  
 		  
 	if (window['ReactNativeWebView']){
@@ -183,7 +266,8 @@ function App() {
 				wc.default(wasm).then(async witnessCalculator => {
 					console.log("witnessCalculator:", witnessCalculator)
 					witnessCalculator.calculateWTNSBin(proofInput,0).then(buff =>{
-						makeProofOnly(zkeyFile,buff).then(({ proof: _proof, publicSignals: _signals }) =>{
+						makeProofOnly(zkeyFile,buff).then(({ proof: _proof, pub_signals: _signals }) =>{
+							console.log(_signals);
 							alert("make proof v2 finished");
 							setProof(JSON.stringify(_proof, null, 2));
 							setSignals(JSON.stringify(_signals, null, 2));
@@ -212,7 +296,7 @@ function App() {
 				This is a proof generator for circuit under the path <br />{wasmFile}
   </Alert>
 
-				<Button variant="outline-primary" onClick={runProofsV2}>Generate Proof</Button>
+				<Button variant="outline-primary" onClick={runProofsV2}>Generate Proof (new auth circuit v2)</Button>
 				<Container   style={{ fontSize: 12 }}>
 
 					
